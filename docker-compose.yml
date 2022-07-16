@@ -1,0 +1,14 @@
+version: "3"
+services:
+  jenkins:
+    image: devopsggq/jenkins:latest
+    container_name: jenkins-ci
+    privileged: true
+    user: root
+    ports:
+      - 7001:8080
+      - 50000:50000
+    volumes:
+      - ./jenkins_home/:/var/jenkins_home
+      - ./jenkins_var/var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins_usr/usr/local/bin/docker:/usr/local/bin/docker
