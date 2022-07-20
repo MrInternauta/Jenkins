@@ -1,7 +1,7 @@
-version: "3"
+version: '3'
 services:
   jenkins:
-    image: devopsggq/jenkins:latest
+    image: mrinternauta/jenkins-cli
     container_name: jenkins-ci
     privileged: true
     user: root

@@ -150,7 +150,7 @@ RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y git
 RUN apt-get install -y curl \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && curl -L https://www.npmjs.com/install.sh | sh \
     && npm install -g @angular/cli@latest
@@ -165,7 +165,7 @@ version: '3'
 
 services:
   jenkins:
-    image: devopsggq/jenkins:latest
+    image: mrinternauta/jenkins-cli
     container_name: jenkins-ci
     privileged: true
     user: root
@@ -177,3 +177,43 @@ services:
       - ./jenkins_var/var/run/docker.sock:/var/run/docker.sock
       - ./jenkins_usr/usr/local/bin/docker:/usr/local/bin/docker
 ```
+## Creating my own Image and jenkins instance
+- Execute 
+```
+docker build -t mrinternauta/jenkins-cli .
+```
+- Build the compose service
+```
+docker-compose up -d
+```
+
+##  Cadenas de Jobs
+Primero instalamos el plugin Parameterized Trigger, igual cómo instalamos anteriormente y reiniciamos.
+
+Luego vamos a crear 2 jobs nuevos:
+watchers: En este job, vamos a configure y vamos a “Build after other projects are built” y escribimos y escribimos hello-platzi, sí hello-platzi es successful, quiero que se ejecute watchers.
+Y en la parte de executed shell, escribimos : echo “Running after hello-platzi success” y guardamos.
+parameterized: Acepta parámetros cuando lo llamo. Marcamos la opción “ This project is parameterized” y en el name escribimos ROOT_ID.
+Y en el execute shell: echo “calle with $ROOT_ID” y guardamos.
+
+Y en hello-platzi, en Downstream project, y estos se añaden cuando jenkins se da cuenta que su job tiene una dependencia con otro.
+Vamos al configure de hello-platzi y en el execute shell escribimos:
+echo “Hello Platzi from $NAME”
+Y añadir un build step que se llama : “Trigger/call build on other projects”, y en projects to build escribimos parameterized y le damos en añadir parámetros, luego parámetros predefinidos y escribimos:
+ROOT_ID=$BUILD_NUMBER
+BUILD_NUMBER es una variable de entorno, que es el valor de esta ejecución y guardamos.
+
+Le damos en “build with parameters” y entramos al console output de parameterized y vemos que la ejecución número tal, fue la que ejecutó a parameterized.
+Corre hello-platzi, él llama declarativamente a parameterized e indirectamente a watchers.
+
+Corre los test para esta versión, cuando acabes, mandame esta versión a producción le pasó el id del commit, y se lo pasó a mí job que hace deployment y cuando lo resuelvas me lo despliegas.
+El sabe la cadena de ejecuciones que tuvo, y cuál fue el que inició este proceso.
+El profe recomienda usar parameterized jobs en vez de watchers, porque cuando uso watchers solo tengo tres opciones mientras que con parameterized jobs tengo más opciones.
+
+
+## Conectar jobs
+para conectar jobs podemos hacerlo de dos formas, basicamente:
+
+una es que un job este escuchando a otro, y en funcion de su estado success, fail etc. se ejecute -> (ejemplo de watchers)
+
+la otra manera es desde un job (padre), llamar a explicitamente a otro job (hijo) para esto es necesario agregar un build step de tipo Trigger/call build on other projects esta opcion tiene la potencialidad de que se puede pasar parametros del job padre al hijo
