@@ -217,3 +217,10 @@ para conectar jobs podemos hacerlo de dos formas, basicamente:
 una es que un job este escuchando a otro, y en funcion de su estado success, fail etc. se ejecute -> (ejemplo de watchers)
 
 la otra manera es desde un job (padre), llamar a explicitamente a otro job (hijo) para esto es necesario agregar un build step de tipo Trigger/call build on other projects esta opcion tiene la potencialidad de que se puede pasar parametros del job padre al hijo
+
+relay login -k 35156e4b-fc52-4d94-b42f-63569c754af4 -s 7jdA2fZD5f2g && relay forward --bucket forwarding-config-C87yq5 http://localhost:8080/github-webhook/
+
+## ¿Qué es un 'Pipeline'?
+Pipelines nos permiten configurar nuestros Jobs con código en lugar de hacerlo en la interfaz visual. En Jenkins los hay de dos maneras: Scripting y Declarative.
+
+[See](https://www.jenkins.io/doc/book/pipeline/)
