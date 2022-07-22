@@ -9,20 +9,8 @@ services:
       - 7001:8080
       - 50000:50000
     volumes:
+    #mount docker socket to jenkins execute docker
       - ./jenkins_home/:/var/jenkins_home
-      - ./jenkins_var/var/run/docker.sock:/var/run/docker.sock
-      - ./jenkins_usr/usr/local/bin/docker:/usr/local/bin/docker
-  jenkins_slave:
-    image: mrinternauta/jenkins-cli
-    container_name: jenkins-ci-slave
-    privileged: true
-    user: root
-    ports:
-      - 7002:8080
-      - 50001:50000
-      - 7022:22
-
-    volumes:
-      - ./slave_jenkins_home/:/var/jenkins_home
-      - ./slave_jenkins_var/var/run/docker.sock:/var/run/docker.sock
-      - ./slave_jenkins_usr/usr/local/bin/docker:/usr/local/bin/docker
+      - /var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
